@@ -1,0 +1,34 @@
+<form>
+  <input type="number" placeholder="Bodyweight (lbs)" required>
+  <br><br>
+
+  @for (entry of exerciseEntries; track $index; let exerciseIndex = $index) {
+    <select>
+      @for (exercise of exercises; track exercise) {
+        <option [value]="exercise">
+          {{ exercise }}
+        </option>
+      }
+    </select>
+    <button type="button" (click)="removeExercise(exerciseIndex)">Remove Exercise</button>
+    <br><br>
+
+    @for (set of entry.sets; track $index) {
+      <h3>Set {{ $index + 1 }}</h3>
+      <input type="number" placeholder="Weight (lbs)" required>
+      <input type="number" placeholder="Reps" required>
+      <button type="button" (click)="removeSet(exerciseIndex, $index)">Remove Set</button>
+      <br><br>
+    }
+
+    <button type="button" (click)="addSet(exerciseIndex)">Add Set</button>
+    <br><br>
+  }
+
+  <button type="button" (click)="addExercise()">Add Exercise</button>
+
+  <br><br>
+
+  <button type="submit">Submit Workout</button>
+
+</form>
