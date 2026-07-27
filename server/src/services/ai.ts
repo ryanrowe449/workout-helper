@@ -1,4 +1,5 @@
 import OpenAI from "openai";
+import { text } from "stream/consumers";
 
 const client = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
@@ -13,7 +14,14 @@ export async function analyzeWorkoutWithAI(summary: any) {
       {
         role: "system",
         content:
-          "You are a certified strength coach. Respond ONLY in valid JSON."
+          `You are a certified strength coach. Respond ONLY with a valid JSON object. The JSON must have this structure:
+          {
+            "summary": string,
+            "strengths": string,
+            "weaknesses": string,
+            "recommendations": string
+          }
+          Do not include any markdown, code fences, or additional text.`
       },
       {
         role: "user",
@@ -21,6 +29,5 @@ export async function analyzeWorkoutWithAI(summary: any) {
       }
     ]
   });
-  console.log(response.choices[0].message.content);
   return JSON.parse(response.choices[0].message.content!);
 }

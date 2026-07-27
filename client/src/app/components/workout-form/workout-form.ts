@@ -1,4 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, Output, EventEmitter } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { WorkoutService } from '../../services/workout.service';
 
 interface Set {
   weight: number | null;
@@ -12,13 +14,16 @@ interface ExerciseEntry {
 
 @Component({
   selector: 'app-workout-form',
-  imports: [],
+  standalone: true,
+  imports: [FormsModule],
   templateUrl: './workout-form.html',
   styleUrl: './workout-form.css',
 })
 
 
 export class WorkoutForm {
+  bodyweight: number | null = null;
+  
   exercises = [
     'Dumbbell Bench Press',
     'Machine Bench Press',
@@ -37,7 +42,7 @@ export class WorkoutForm {
   // create an empty array of exercise entries, then add one with constructor
   exerciseEntries: ExerciseEntry[] = [];
 
-  constructor() {
+  constructor(private workoutService: WorkoutService) {
     this.addExercise();
   }
 
@@ -67,4 +72,39 @@ export class WorkoutForm {
   removeSet(exerciseIndex: number, setIndex: number) {
     this.exerciseEntries[exerciseIndex].sets.splice(setIndex, 1);
   }
+
+  private buildWorkout(): any {
+    return {
+      bodyweight: this.bodyweight,
+      exercises: this.exerciseEntries.map(entry => ({
+        name: entry.selectedExercise,
+        sets: entry.sets
+      }))
+    };
+  }
+
+  @Output() metricsRequested = new EventEmitter<any>();
+  @Output() aiAnalysisRequested = new EventEmitter<any>();
+
+  submitMetrics() {
+    const workout = this.buildWorkout();
+    this.metricsRequested.emit(workout);
+  }
+
+  submitAIAnalysis() {
+    const workout = this.buildWorkout();
+    this.aiAnalysisRequested.emit(workout);
+  }
+  // @Output() workoutSubmitted = new EventEmitter<any>();
+  // submitWorkout() {
+  //   const workout = {
+  //     bodyweight: this.bodyweight,
+  //     exercises: this.exerciseEntries.map(entry => ({
+  //       name: entry.selectedExercise,
+  //       sets: entry.sets
+  //     }))
+  //   };
+  //   // emit workout data to the parent object (App)
+  //   this.workoutSubmitted.emit(workout);
+  // }
 }

@@ -20,6 +20,10 @@ router.post("/", async (req, res) => {
 
   const strengthRatios = getStrengthRatios(exerciseSummaries);
   const volumeRatios = getVolumeRatios(exerciseSummaries);
+  const metrics = {
+    strength_ratios: strengthRatios,
+    volume_ratios: volumeRatios
+  };
 
   const aiInput = {
     bodyweight: workout.bodyweight,
@@ -31,8 +35,36 @@ router.post("/", async (req, res) => {
   const aiResult = await analyzeWorkoutWithAI(aiInput);
 
   res.json({
-    metrics: exerciseSummaries,
+    exerciseSummaries: exerciseSummaries,
+    metrics: metrics,
     analysis: aiResult
+  });
+});
+
+router.post("/metrics", async (req, res) => {
+  const parsed = WorkoutSchema.safeParse(req.body);
+  if (!parsed.success) {
+    return res.status(400).json(parsed.error);
+  }
+
+  const workout = parsed.data;
+
+  const exerciseSummaries = workout.exercises.map(ex => ({
+    name: ex.name,
+    ...analyzeExercise(ex.sets)
+  }));
+
+  const strengthRatios = getStrengthRatios(exerciseSummaries);
+  const volumeRatios = getVolumeRatios(exerciseSummaries);
+
+  const metrics = {
+    strength_ratios: strengthRatios,
+    volume_ratios: volumeRatios
+  };
+
+  res.json({
+    exerciseSummaries: exerciseSummaries,
+    metrics: metrics
   });
 });
 

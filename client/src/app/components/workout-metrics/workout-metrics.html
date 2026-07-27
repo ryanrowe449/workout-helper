@@ -1,0 +1,31 @@
+<!-- @if (analysis) {
+  <pre>{{ analysis | json }}</pre>
+} -->
+@if (analysis) {
+    @if (analysis.analysis) {
+        <h2>AI Analysis</h2>
+        <p>{{ analysis.analysis.summary }}</p>
+        <p>{{ analysis.analysis.strengths }}</p>
+        <p>{{ analysis.analysis.weaknesses }}</p>
+        <p>{{ analysis.analysis.recommendations }}</p>
+    }
+    <h1>Metrics</h1>
+
+    <h2>Strength Ratios</h2>
+    <p>Push to Pull Ratio: {{ analysis.metrics.strength_ratios.pushPullRatio }}</p>
+    <p>Squat to Hinge Ratio: {{ analysis.metrics.strength_ratios.squatHingeRatio }}</p>
+
+    <h2>Volume Ratios</h2>
+    <p>Push to Pull Ratio: {{ analysis.metrics.volume_ratios.pushPullVolRatio }}</p>
+    <p>Squat to Hinge Ratio: {{ analysis.metrics.volume_ratios.squatHingeVolRatio }}</p>
+    <p>Quads to Hamstrings Ratio: {{ analysis.metrics.volume_ratios.quadHamstringVolRatio }}</p>
+    <p>Chest to Back Ratio: {{ analysis.metrics.volume_ratios.chestBackVolRatio }}</p>
+
+    <h2>Individual Exercise Metrics</h2>
+    @for (ex of analysis.exerciseSummaries; track ex.name) {
+        <h3>{{ ex.name }}</h3>
+        <p>Estimated 1RM: {{ ex.estimated1RM }}</p>
+        <p>Total Volume: {{ ex.totalVolume }}</p>
+    }
+
+}
